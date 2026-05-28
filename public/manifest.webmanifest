@@ -1,0 +1,17 @@
+{
+  "name": "Designer Work System",
+  "short_name": "Work System",
+  "description": "Sistema simples para organizar tarefas, entregas e lembretes de design.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f7f4",
+  "theme_color": "#173c2b",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
