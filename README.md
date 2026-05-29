@@ -2,6 +2,16 @@
 
 Sistema simples para organizar posts, clientes, artes, tarefas, lembretes e relatórios.
 
+## Deploy recomendado
+
+Use Cloudflare Pages + Supabase para ter uma versão gratuita sem a tela de "acordar" do Render.
+
+O passo a passo está em:
+
+```txt
+README_DEPLOY.md
+```
+
 ## Rodar localmente
 
 ```bash
@@ -13,12 +23,4 @@ Depois abra:
 
 ```txt
 http://localhost:3333
-```
-
-## Deploy gratuito
-
-Use Render + Supabase. O passo a passo está em:
-
-```txt
-README_DEPLOY.md
 ```
