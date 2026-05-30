@@ -10,7 +10,6 @@ const api = {
 };
 
 const statusOrder = ["A fazer", "Em andamento", "Aguardando aprovação", "Concluído"];
-const priorityOrder = ["Alta", "Média", "Baixa"];
 const checklistLabels = ["Briefing recebido", "Arte criada", "Legenda criada", "Enviado para cliente", "Ajustes aplicados", "Aprovado", "Publicado"];
 
 const state = {
@@ -95,7 +94,6 @@ const els = {
   taskTheme: document.querySelector("#taskTheme"),
   taskLinks: document.querySelector("#taskLinks"),
   taskChecklist: document.querySelector("#taskChecklist"),
-  taskPriority: document.querySelector("#taskPriority"),
   taskStatus: document.querySelector("#taskStatus"),
   taskHours: document.querySelector("#taskHours"),
   taskReminder: document.querySelector("#taskReminder"),
@@ -346,12 +344,11 @@ function renderTable() {
         <td>${escapeHtml(task.client)}</td>
         <td>${escapeHtml(task.deliverable)}</td>
         <td>${escapeHtml(task.theme || "Sem tema")}</td>
-        <td>${priorityPill(task.autoPriority || task.priority)}</td>
         <td>${statusPill(task.status)}</td>
         <td><button class="mini-button" data-edit="${task.id}" type="button">Editar</button></td>
       </tr>
     `).join("")
-    : `<tr><td colspan="7"><div class="empty">Nenhuma entrega encontrada.</div></td></tr>`;
+    : `<tr><td colspan="6"><div class="empty">Nenhuma entrega encontrada.</div></td></tr>`;
 
   els.taskRows.querySelectorAll("[data-edit]").forEach((button) => {
     button.addEventListener("click", () => openTaskDialog(button.dataset.edit));
@@ -380,7 +377,7 @@ function renderReminders() {
       <article class="task-card">
         <h3>${escapeHtml(task.theme || task.deliverable)}</h3>
         <p>${escapeHtml(task.client)} · ${formatReminder(task.remindAt)}</p>
-        <div class="task-meta">${statusPill(task.status)}${priorityPill(task.priority)}</div>
+        <div class="task-meta">${statusPill(task.status)}</div>
       </article>
     `).join("")
     : `<div class="empty">Nenhum lembrete configurado.</div>`;
@@ -533,7 +530,6 @@ function taskCard(task) {
       </div>
       <div class="task-meta">
         ${statusPill(task.status)}
-        ${priorityPill(task.autoPriority || task.priority)}
         <span class="pill">${formatNumber(task.hours)}h</span>
       </div>
       <div class="task-actions">
@@ -597,7 +593,6 @@ function openTaskDialog(taskId = "") {
   els.taskTheme.value = task?.theme || "";
   els.taskLinks.value = Array.isArray(task?.links) ? task.links.join("\n") : "";
   renderChecklistEditor(task?.checklist);
-  els.taskPriority.value = task?.priority || "Média";
   els.taskStatus.value = task?.status || "A fazer";
   els.taskHours.value = task?.hours || 1.5;
   els.taskReminder.value = task?.remindAt ? task.remindAt.slice(0, 16) : "";
@@ -636,7 +631,6 @@ async function saveTask(event) {
     theme: els.taskTheme.value.trim(),
     links: els.taskLinks.value.split("\n").map((link) => link.trim()).filter(Boolean),
     checklist: getChecklistFromForm(),
-    priority: els.taskPriority.value,
     status: els.taskStatus.value,
     hours: Number(els.taskHours.value || 0),
     remindAt: els.taskReminder.value ? `${els.taskReminder.value}:00.000` : null,
@@ -931,13 +925,8 @@ function statusPill(status) {
   return `<span class="pill ${className}">${escapeHtml(status)}</span>`;
 }
 
-function priorityPill(priority) {
-  const className = priority === "Alta" ? "high" : priority === "Média" ? "medium" : "";
-  return `<span class="pill ${className}">${escapeHtml(priority)}</span>`;
-}
-
 function sortTasks(a, b) {
-  return a.dueDate.localeCompare(b.dueDate) || priorityOrder.indexOf(a.autoPriority || a.priority) - priorityOrder.indexOf(b.autoPriority || b.priority);
+  return a.dueDate.localeCompare(b.dueDate);
 }
 
 function getNotificationText(value) {

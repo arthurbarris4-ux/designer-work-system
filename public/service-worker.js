@@ -1,4 +1,4 @@
-const CACHE_NAME = "designer-work-system-v5";
+const CACHE_NAME = "designer-work-system-v6";
 const STATIC_ASSETS = [
   "/",
   "/index.html",

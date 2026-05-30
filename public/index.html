@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
@@ -29,21 +29,21 @@
           <button class="nav-button active" data-view="dashboard" type="button">Painel</button>
           <button class="nav-button" data-view="today" type="button">Hoje</button>
           <button class="nav-button" data-view="clients" type="button">Clientes</button>
-          <button class="nav-button" data-view="calendar" type="button">Calendário</button>
-          <button class="nav-button" data-view="board" type="button">Produção</button>
+          <button class="nav-button" data-view="calendar" type="button">CalendÃ¡rio</button>
+          <button class="nav-button" data-view="board" type="button">ProduÃ§Ã£o</button>
           <button class="nav-button" data-view="assets" type="button">Artes</button>
-          <button class="nav-button" data-view="reports" type="button">Relatório</button>
+          <button class="nav-button" data-view="reports" type="button">RelatÃ³rio</button>
           <button class="nav-button" data-view="settings" type="button">Sistema</button>
         </nav>
 
         <div class="sidebar-dashboard">
-          <span class="kicker">Próximo post</span>
+          <span class="kicker">PrÃ³ximo post</span>
           <strong id="sideNextTitle">Carregando</strong>
           <small id="sideNextMeta">aguarde o backend</small>
         </div>
 
         <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar modo claro e escuro">
-          <span id="themeIcon">☾</span>
+          <span id="themeIcon">â˜¾</span>
           <strong id="themeLabel">Modo dark</strong>
         </button>
 
@@ -59,7 +59,7 @@
       <main class="content">
         <header class="header">
           <div>
-            <span class="kicker">Organização diária</span>
+            <span class="kicker">OrganizaÃ§Ã£o diÃ¡ria</span>
             <h1>Sistema de trabalho</h1>
           </div>
           <div class="header-actions">
@@ -67,14 +67,14 @@
               <span>Data foco</span>
               <input id="focusDate" type="date" />
             </label>
-            <button class="button secondary" id="requestNotifications" type="button">Ativar notificações</button>
+            <button class="button secondary" id="requestNotifications" type="button">Ativar notificaÃ§Ãµes</button>
             <button class="button primary" id="newTask" type="button">Nova tarefa</button>
           </div>
         </header>
 
         <section class="filters">
           <label class="search">
-            <span>⌕</span>
+            <span>âŒ•</span>
             <input id="search" type="search" placeholder="Buscar cliente, entrega, tema..." />
           </label>
           <select id="clientFilter" aria-label="Cliente"></select>
@@ -84,9 +84,9 @@
         <section class="view active" id="dashboardView">
           <section class="next-post-hero" id="nextPostHero">
             <div>
-              <span class="kicker">Post mais próximo</span>
-              <h2 id="nextPostTitle">Carregando próximo post</h2>
-              <p id="nextPostMeta">O sistema busca o post de hoje; se não tiver, mostra o mais perto da entrega.</p>
+              <span class="kicker">Post mais prÃ³ximo</span>
+              <h2 id="nextPostTitle">Carregando prÃ³ximo post</h2>
+              <p id="nextPostMeta">O sistema busca o post de hoje; se nÃ£o tiver, mostra o mais perto da entrega.</p>
             </div>
             <div class="next-post-actions">
               <span class="pill" id="nextPostDate">--/--</span>
@@ -103,12 +103,12 @@
             <article>
               <span>Pendentes</span>
               <strong id="pendingCount">0</strong>
-              <small>fora do concluído</small>
+              <small>fora do concluÃ­do</small>
             </article>
             <article>
               <span>Atrasadas</span>
               <strong id="lateCount">0</strong>
-              <small>precisam de atenção</small>
+              <small>precisam de atenÃ§Ã£o</small>
             </article>
             <article>
               <span>Semana</span>
@@ -121,8 +121,8 @@
             <section class="panel">
               <div class="panel-title">
                 <div>
-                  <span class="kicker">Próximos 7 dias</span>
-                  <h2>Agenda rápida</h2>
+                  <span class="kicker">PrÃ³ximos 7 dias</span>
+                  <h2>Agenda rÃ¡pida</h2>
                 </div>
               </div>
               <div class="week" id="week"></div>
@@ -143,7 +143,7 @@
             <div class="panel-title">
               <div>
                 <span class="kicker">Fila</span>
-                <h2>Próximas entregas</h2>
+                <h2>PrÃ³ximas entregas</h2>
               </div>
             </div>
             <div class="table-wrap">
@@ -154,7 +154,6 @@
                     <th>Cliente</th>
                     <th>Entrega</th>
                     <th>Tema</th>
-                    <th>Prioridade</th>
                     <th>Status</th>
                     <th></th>
                   </tr>
@@ -181,12 +180,12 @@
               <div class="panel-title">
                 <div>
                   <span class="kicker">Lembretes</span>
-                  <h2>Notificação no celular</h2>
+                  <h2>NotificaÃ§Ã£o no celular</h2>
                 </div>
               </div>
               <div class="notice-box">
-                <strong id="notificationState">Não configurado</strong>
-                <p>O sistema checa lembretes no backend a cada 30 segundos enquanto o app está aberto. Para notificação push em segundo plano no celular, publique em HTTPS.</p>
+                <strong id="notificationState">NÃ£o configurado</strong>
+                <p>O sistema checa lembretes no backend a cada 30 segundos enquanto o app estÃ¡ aberto. Para notificaÃ§Ã£o push em segundo plano no celular, publique em HTTPS.</p>
               </div>
               <div class="task-list compact" id="reminderList"></div>
             </section>
@@ -207,11 +206,11 @@
         <section class="view" id="calendarView">
           <div class="section-head">
             <div>
-              <span class="kicker">Calendário visual</span>
-              <h2 id="calendarTitle">Mês</h2>
+              <span class="kicker">CalendÃ¡rio visual</span>
+              <h2 id="calendarTitle">MÃªs</h2>
             </div>
             <label class="field compact">
-              <span>Mês</span>
+              <span>MÃªs</span>
               <input id="calendarMonth" type="month" />
             </label>
           </div>
@@ -221,7 +220,7 @@
         <section class="view" id="boardView">
           <div class="section-head">
             <div>
-              <span class="kicker">Produção</span>
+              <span class="kicker">ProduÃ§Ã£o</span>
               <h2>Quadro por status</h2>
             </div>
           </div>
@@ -253,7 +252,7 @@
               </div>
             </section>
             <section class="panel">
-              <h3>Últimas artes</h3>
+              <h3>Ãšltimas artes</h3>
               <div class="asset-grid" id="assetGrid"></div>
             </section>
           </div>
@@ -263,7 +262,7 @@
           <div class="section-head">
             <div>
               <span class="kicker">Entrega para cliente</span>
-              <h2>Relatório mensal</h2>
+              <h2>RelatÃ³rio mensal</h2>
             </div>
             <button class="button secondary" id="printReport" type="button">Imprimir / PDF</button>
           </div>
@@ -273,10 +272,10 @@
               <select id="reportClient"></select>
             </label>
             <label class="field">
-              <span>Mês</span>
+              <span>MÃªs</span>
               <input id="reportMonth" type="month" />
             </label>
-            <button class="button primary" id="generateReport" type="button">Gerar relatório</button>
+            <button class="button primary" id="generateReport" type="button">Gerar relatÃ³rio</button>
           </section>
           <section class="panel report-sheet" id="reportSheet"></section>
         </section>
@@ -285,25 +284,25 @@
           <div class="section-head">
             <div>
               <span class="kicker">Sistema</span>
-              <h2>Backend e notificações</h2>
+              <h2>Backend e notificaÃ§Ãµes</h2>
             </div>
           </div>
           <div class="grid two">
             <section class="panel">
               <h3>Salvamento</h3>
-              <p>As tarefas são salvas no arquivo <code>data/db.json</code> pelo backend local. Se fechar e abrir o navegador, os dados continuam lá.</p>
+              <p>As tarefas sÃ£o salvas no arquivo <code>data/db.json</code> pelo backend local. Se fechar e abrir o navegador, os dados continuam lÃ¡.</p>
               <dl class="system-list">
                 <dt>API</dt>
                 <dd><code>/api/tasks</code></dd>
                 <dt>Resumo</dt>
                 <dd><code>/api/summary</code></dd>
-                <dt>Notificações</dt>
+                <dt>NotificaÃ§Ãµes</dt>
                 <dd><code>/api/notifications/due</code></dd>
               </dl>
             </section>
             <section class="panel">
               <h3>Celular</h3>
-              <p>Para testar no celular na mesma rede, abra o endereço do computador com a porta <code>3333</code>. Para instalar como app e receber push em segundo plano, hospede em HTTPS.</p>
+              <p>Para testar no celular na mesma rede, abra o endereÃ§o do computador com a porta <code>3333</code>. Para instalar como app e receber push em segundo plano, hospede em HTTPS.</p>
               <button class="button secondary" id="installApp" type="button">Instalar app</button>
             </section>
           </div>
@@ -318,13 +317,12 @@
             <span class="kicker">Tarefa</span>
             <h2 id="dialogTitle">Nova tarefa</h2>
           </div>
-          <button class="icon-button" id="closeDialog" type="button">×</button>
+          <button class="icon-button" id="closeDialog" type="button">Ã—</button>
         </div>
 
         <input id="taskId" type="hidden" />
 
         <div class="form-grid">
-          <label class="field">
             <span>Cliente</span>
             <input id="taskClient" type="text" required />
           </label>
@@ -345,28 +343,20 @@
             <input id="taskTheme" type="text" />
           </label>
           <label class="field full">
-            <span>Links úteis</span>
-            <textarea id="taskLinks" rows="2" placeholder="Canva, Drive, Figma, referência... um por linha"></textarea>
+            <span>Links Ãºteis</span>
+            <textarea id="taskLinks" rows="2" placeholder="Canva, Drive, Figma, referÃªncia... um por linha"></textarea>
           </label>
           <div class="field full">
             <span>Checklist</span>
             <div class="checklist-editor" id="taskChecklist"></div>
           </div>
           <label class="field">
-            <span>Prioridade</span>
-            <select id="taskPriority">
-              <option>Alta</option>
-              <option selected>Média</option>
-              <option>Baixa</option>
-            </select>
-          </label>
-          <label class="field">
             <span>Status</span>
             <select id="taskStatus">
               <option>A fazer</option>
               <option>Em andamento</option>
-              <option>Aguardando aprovação</option>
-              <option>Concluído</option>
+              <option>Aguardando aprovaÃ§Ã£o</option>
+              <option>ConcluÃ­do</option>
             </select>
           </label>
           <label class="field">
@@ -398,22 +388,22 @@
         <div class="modal-head">
           <div>
             <span class="kicker">Instalar no celular</span>
-            <h2>O botão pode não aparecer no celular</h2>
+            <h2>O botÃ£o pode nÃ£o aparecer no celular</h2>
           </div>
-          <button class="icon-button" id="closeInstallDialog" type="button">×</button>
+          <button class="icon-button" id="closeInstallDialog" type="button">Ã—</button>
         </div>
         <div class="install-steps">
           <article>
             <strong>Android / Chrome</strong>
-            <p>Toque nos três pontinhos do navegador e escolha <b>Adicionar à tela inicial</b> ou <b>Instalar app</b>.</p>
+            <p>Toque nos trÃªs pontinhos do navegador e escolha <b>Adicionar Ã  tela inicial</b> ou <b>Instalar app</b>.</p>
           </article>
           <article>
             <strong>iPhone / Safari</strong>
-            <p>Toque em compartilhar e depois em <b>Adicionar à Tela de Início</b>.</p>
+            <p>Toque em compartilhar e depois em <b>Adicionar Ã  Tela de InÃ­cio</b>.</p>
           </article>
           <article>
             <strong>Importante</strong>
-            <p>O botão automático de instalação só aparece quando o navegador permite PWA. Em celular via IP local, alguns navegadores bloqueiam porque não é HTTPS.</p>
+            <p>O botÃ£o automÃ¡tico de instalaÃ§Ã£o sÃ³ aparece quando o navegador permite PWA. Em celular via IP local, alguns navegadores bloqueiam porque nÃ£o Ã© HTTPS.</p>
           </article>
         </div>
         <div class="modal-actions">
@@ -430,7 +420,7 @@
             <span class="kicker">Cliente</span>
             <h2 id="clientDialogTitle">Novo cliente</h2>
           </div>
-          <button class="icon-button" id="closeClientDialog" type="button">×</button>
+          <button class="icon-button" id="closeClientDialog" type="button">Ã—</button>
         </div>
         <input id="clientId" type="hidden" />
         <div class="form-grid">
@@ -467,7 +457,7 @@
             </select>
           </label>
           <label class="field full">
-            <span>Observações</span>
+            <span>ObservaÃ§Ãµes</span>
             <textarea id="clientNotes" rows="3"></textarea>
           </label>
         </div>
@@ -486,14 +476,14 @@
         <div class="modal-head">
           <div>
             <span class="kicker">Resumo do dia</span>
-            <h2 id="dailyGreeting">Antes de começar</h2>
+            <h2 id="dailyGreeting">Antes de comeÃ§ar</h2>
           </div>
-          <button class="icon-button" id="closeDailySummary" type="button">×</button>
+          <button class="icon-button" id="closeDailySummary" type="button">Ã—</button>
         </div>
         <div id="dailySummaryContent"></div>
         <div class="modal-actions">
           <span></span>
-          <button class="button primary" id="startWorking" type="button">Começar</button>
+          <button class="button primary" id="startWorking" type="button">ComeÃ§ar</button>
         </div>
       </div>
     </dialog>
