@@ -767,16 +767,20 @@ textarea:focus {
 
 .week {
   display: grid;
-  grid-template-columns: repeat(7, minmax(96px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  align-items: stretch;
 }
 
 .day {
-  min-height: 128px;
+  min-height: 176px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 10px;
+  padding: 12px;
   background: #fafcfa;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .day.focus {
@@ -784,18 +788,69 @@ textarea:focus {
   background: var(--soft);
 }
 
-.day strong,
-.day small {
+.day-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.day-head strong,
+.day-head small {
   display: block;
 }
 
+.day-head strong {
+  text-transform: lowercase;
+}
+
+.day-count {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 8px;
+  background: var(--card);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.day-list {
+  display: grid;
+  gap: 8px;
+}
+
 .mini-task {
-  margin-top: 8px;
   border-left: 4px solid var(--green);
   border-radius: 7px;
   background: #fff;
-  padding: 7px;
-  font-size: 0.8rem;
+  padding: 9px 10px;
+  display: grid;
+  gap: 4px;
+  line-height: 1.25;
+  box-shadow: 0 8px 18px rgba(12, 25, 18, 0.05);
+}
+
+.mini-client {
+  color: var(--ink);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.mini-theme {
+  color: var(--ink);
+  font-size: 0.84rem;
+  font-weight: 650;
+  overflow-wrap: break-word;
+}
+
+.more-tasks {
+  color: var(--muted);
+  font-weight: 800;
 }
 
 html[data-theme="dark"] .mini-task,

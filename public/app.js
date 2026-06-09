@@ -301,15 +301,22 @@ function renderWeek() {
     const card = document.createElement("article");
     card.className = `day ${i === 0 ? "focus" : ""}`;
     card.innerHTML = `
-      <strong>${weekday(day)}</strong>
-      <small>${formatShortDate(day)}</small>
-      ${tasks.slice(0, 3).map((task) => `
-        <div class="mini-task ${task.client.includes("Harddy") ? "harddy" : ""}">
-          <strong>${escapeHtml(task.client)}</strong>
-          ${escapeHtml(task.theme || task.deliverable)}
+      <div class="day-head">
+        <div>
+          <strong>${weekday(day)}</strong>
+          <small>${formatShortDate(day)}</small>
         </div>
-      `).join("")}
-      ${tasks.length > 3 ? `<small>+${tasks.length - 3} tarefas</small>` : ""}
+        <span class="day-count">${tasks.length || "livre"}</span>
+      </div>
+      <div class="day-list">
+        ${tasks.slice(0, 4).map((task) => `
+          <div class="mini-task ${task.client.includes("Harddy") ? "harddy" : ""}">
+            <span class="mini-client">${escapeHtml(task.client)}</span>
+            <span class="mini-theme">${escapeHtml(task.theme || task.deliverable)}</span>
+          </div>
+        `).join("")}
+        ${tasks.length > 4 ? `<small class="more-tasks">+${tasks.length - 4} tarefas</small>` : ""}
+      </div>
     `;
     els.week.append(card);
   }
