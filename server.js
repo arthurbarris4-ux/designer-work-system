@@ -84,6 +84,65 @@ async function handleApi(req, res, url) {
     return;
   }
 
+  if (method === "GET" && url.pathname === "/api/finance") {
+    const db = await readDb();
+    sendJson(res, 200, normalizeFinance(db.finance));
+    return;
+  }
+
+  if (method === "PUT" && url.pathname === "/api/finance/investments") {
+    const body = await readBody(req);
+    const db = await readDb();
+    db.finance = normalizeFinance({
+      ...db.finance,
+      investments: Array.isArray(body.investments) ? body.investments : db.finance?.investments,
+      updatedAt: new Date().toISOString(),
+    });
+    await writeDb(db);
+    sendJson(res, 200, db.finance);
+    return;
+  }
+
+  if (method === "POST" && url.pathname === "/api/finance/expenses") {
+    const body = await readBody(req);
+    const db = await readDb();
+    db.finance = normalizeFinance(db.finance);
+    const expense = normalizeExpense(body);
+    db.finance.expenses.push(expense);
+    db.finance.updatedAt = new Date().toISOString();
+    await writeDb(db);
+    sendJson(res, 201, expense);
+    return;
+  }
+
+  if (segments[1] === "finance" && segments[2] === "expenses" && segments[3]) {
+    const expenseId = segments[3];
+    const db = await readDb();
+    db.finance = normalizeFinance(db.finance);
+    const expenseIndex = db.finance.expenses.findIndex((expense) => expense.id === expenseId);
+    if (expenseIndex === -1) {
+      sendJson(res, 404, { error: "Despesa nao encontrada." });
+      return;
+    }
+
+    if (method === "PUT") {
+      const body = await readBody(req);
+      db.finance.expenses[expenseIndex] = normalizeExpense({ ...db.finance.expenses[expenseIndex], ...body, id: expenseId }, false);
+      db.finance.updatedAt = new Date().toISOString();
+      await writeDb(db);
+      sendJson(res, 200, db.finance.expenses[expenseIndex]);
+      return;
+    }
+
+    if (method === "DELETE") {
+      const [deleted] = db.finance.expenses.splice(expenseIndex, 1);
+      db.finance.updatedAt = new Date().toISOString();
+      await writeDb(db);
+      sendJson(res, 200, deleted);
+      return;
+    }
+  }
+
   if (method === "GET" && url.pathname === "/api/clients") {
     const db = await readDb();
     sendJson(res, 200, db.clients || []);
@@ -400,6 +459,14 @@ function migrateDb(db) {
     db.uploads = [];
     changed = true;
   }
+  if (!db.finance) {
+    db.finance = createDefaultFinance();
+    changed = true;
+  } else {
+    const nextFinance = normalizeFinance(db.finance);
+    if (JSON.stringify(nextFinance) !== JSON.stringify(db.finance)) changed = true;
+    db.finance = nextFinance;
+  }
   if (!Array.isArray(db.tasks)) {
     db.tasks = createSeedDatabase().tasks;
     changed = true;
@@ -413,6 +480,48 @@ function migrateDb(db) {
     });
   }
   return { db, changed };
+}
+
+function createDefaultFinance() {
+  return {
+    expenses: [],
+    investments: [
+      { id: "reserva", name: "Reserva", percent: 40 },
+      { id: "equipamentos", name: "Equipamentos", percent: 25 },
+      { id: "marketing", name: "Marketing", percent: 20 },
+      { id: "ferramentas", name: "Ferramentas", percent: 15 },
+    ],
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+function normalizeFinance(input = {}) {
+  const defaults = createDefaultFinance();
+  return {
+    expenses: Array.isArray(input.expenses) ? input.expenses.map((expense) => normalizeExpense(expense, false)) : [],
+    investments: Array.isArray(input.investments) && input.investments.length
+      ? input.investments.map((item) => ({
+        id: String(item.id || randomUUID()),
+        name: String(item.name || "").trim() || "Investimento",
+        percent: Number(item.percent || 0),
+      }))
+      : defaults.investments,
+    updatedAt: input.updatedAt || defaults.updatedAt,
+  };
+}
+
+function normalizeExpense(input, isNew = true) {
+  const now = new Date().toISOString();
+  return {
+    id: input.id || randomUUID(),
+    category: String(input.category || "Outros").trim(),
+    name: String(input.name || "").trim(),
+    amount: Number(input.amount || 0),
+    date: String(input.date || localDate(new Date())).slice(0, 10),
+    status: String(input.status || "Aberta").trim(),
+    createdAt: input.createdAt || now,
+    updatedAt: isNew ? now : input.updatedAt || now,
+  };
 }
 
 function normalizeClient(input, isNew = true) {
@@ -595,6 +704,7 @@ function createSeedDatabase() {
     },
     clients: createSeedClients(),
     uploads: [],
+    finance: createDefaultFinance(),
     tasks,
   };
 }

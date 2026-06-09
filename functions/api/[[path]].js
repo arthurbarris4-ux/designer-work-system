@@ -24,6 +24,58 @@ export async function onRequest(context) {
       return json(db.settings);
     }
 
+    if (method === "GET" && url.pathname === "/api/finance") {
+      const db = await store.readDb();
+      return json(normalizeFinance(db.finance));
+    }
+
+    if (method === "PUT" && url.pathname === "/api/finance/investments") {
+      const body = await readJson(context.request);
+      const db = await store.readDb();
+      db.finance = normalizeFinance({
+        ...db.finance,
+        investments: Array.isArray(body.investments) ? body.investments : db.finance?.investments,
+        updatedAt: new Date().toISOString(),
+      });
+      await store.writeDb(db);
+      return json(db.finance);
+    }
+
+    if (method === "POST" && url.pathname === "/api/finance/expenses") {
+      const body = await readJson(context.request);
+      const db = await store.readDb();
+      db.finance = normalizeFinance(db.finance);
+      const expense = normalizeExpense(body);
+      db.finance.expenses.push(expense);
+      db.finance.updatedAt = new Date().toISOString();
+      await store.writeDb(db);
+      return json(expense, 201);
+    }
+
+    const expenseMatch = url.pathname.match(/^\/api\/finance\/expenses\/([^/]+)$/);
+    if (expenseMatch) {
+      const db = await store.readDb();
+      db.finance = normalizeFinance(db.finance);
+      const expenseId = decodeURIComponent(expenseMatch[1]);
+      const expenseIndex = db.finance.expenses.findIndex((expense) => expense.id === expenseId);
+      if (expenseIndex === -1) return json({ error: "Despesa nao encontrada." }, 404);
+
+      if (method === "PUT") {
+        const body = await readJson(context.request);
+        db.finance.expenses[expenseIndex] = normalizeExpense({ ...db.finance.expenses[expenseIndex], ...body, id: expenseId }, false);
+        db.finance.updatedAt = new Date().toISOString();
+        await store.writeDb(db);
+        return json(db.finance.expenses[expenseIndex]);
+      }
+
+      if (method === "DELETE") {
+        const [deleted] = db.finance.expenses.splice(expenseIndex, 1);
+        db.finance.updatedAt = new Date().toISOString();
+        await store.writeDb(db);
+        return json(deleted);
+      }
+    }
+
     if (method === "GET" && url.pathname === "/api/clients") {
       const db = await store.readDb();
       return json(db.clients || []);
@@ -303,6 +355,14 @@ function migrateDb(db) {
     db.uploads = [];
     changed = true;
   }
+  if (!db.finance) {
+    db.finance = createDefaultFinance();
+    changed = true;
+  } else {
+    const nextFinance = normalizeFinance(db.finance);
+    if (JSON.stringify(nextFinance) !== JSON.stringify(db.finance)) changed = true;
+    db.finance = nextFinance;
+  }
   if (!Array.isArray(db.tasks)) {
     db.tasks = createSeedDatabase().tasks;
     changed = true;
@@ -313,6 +373,48 @@ function migrateDb(db) {
     return next;
   });
   return { db, changed };
+}
+
+function createDefaultFinance() {
+  return {
+    expenses: [],
+    investments: [
+      { id: "reserva", name: "Reserva", percent: 40 },
+      { id: "equipamentos", name: "Equipamentos", percent: 25 },
+      { id: "marketing", name: "Marketing", percent: 20 },
+      { id: "ferramentas", name: "Ferramentas", percent: 15 },
+    ],
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+function normalizeFinance(input = {}) {
+  const defaults = createDefaultFinance();
+  return {
+    expenses: Array.isArray(input.expenses) ? input.expenses.map((expense) => normalizeExpense(expense, false)) : [],
+    investments: Array.isArray(input.investments) && input.investments.length
+      ? input.investments.map((item) => ({
+        id: String(item.id || crypto.randomUUID()),
+        name: String(item.name || "").trim() || "Investimento",
+        percent: Number(item.percent || 0),
+      }))
+      : defaults.investments,
+    updatedAt: input.updatedAt || defaults.updatedAt,
+  };
+}
+
+function normalizeExpense(input, isNew = true) {
+  const now = new Date().toISOString();
+  return {
+    id: input.id || crypto.randomUUID(),
+    category: String(input.category || "Outros").trim(),
+    name: String(input.name || "").trim(),
+    amount: Number(input.amount || 0),
+    date: String(input.date || localDate(new Date())).slice(0, 10),
+    status: String(input.status || "Aberta").trim(),
+    createdAt: input.createdAt || now,
+    updatedAt: isNew ? now : input.updatedAt || now,
+  };
 }
 
 function normalizeClient(input, isNew = true) {
@@ -473,6 +575,7 @@ function createSeedDatabase() {
     settings: { notificationCheckSeconds: 30, defaultReminderTime: "09:00", updatedAt: new Date().toISOString() },
     clients: createSeedClients(),
     uploads: [],
+    finance: createDefaultFinance(),
     tasks,
   };
 }

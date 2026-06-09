@@ -201,6 +201,113 @@
             <button class="button primary" id="newClient" type="button">Novo cliente</button>
           </div>
           <div class="client-grid" id="clientGrid"></div>
+          <section class="finance-area">
+            <div class="section-head finance-head">
+              <div>
+                <span class="kicker">Financeiro</span>
+                <h2>Controle de dinheiro</h2>
+              </div>
+              <label class="field compact">
+                <span>Mes</span>
+                <input id="financeMonth" type="month" />
+              </label>
+            </div>
+
+            <div class="finance-summary">
+              <article>
+                <span>Total trabalhos</span>
+                <strong id="financeRevenue">R$ 0,00</strong>
+                <small>contratos cadastrados</small>
+              </article>
+              <article>
+                <span>A receber</span>
+                <strong id="financeOpen">R$ 0,00</strong>
+                <small>pagamentos em aberto</small>
+              </article>
+              <article>
+                <span>Despesas do mes</span>
+                <strong id="financeExpenses">R$ 0,00</strong>
+                <small>gastos registrados</small>
+              </article>
+              <article>
+                <span>Saldo estimado</span>
+                <strong id="financeBalance">R$ 0,00</strong>
+                <small>trabalhos menos despesas</small>
+              </article>
+            </div>
+
+            <div class="grid two finance-grid">
+              <section class="panel">
+                <div class="panel-title">
+                  <div>
+                    <span class="kicker">Gastos</span>
+                    <h2>Despesas</h2>
+                  </div>
+                </div>
+                <form class="finance-form" id="expenseForm">
+                  <label class="field">
+                    <span>Categoria</span>
+                    <select id="expenseCategory">
+                      <option>Agua</option>
+                      <option>Energia</option>
+                      <option>Aluguel</option>
+                      <option>Compras</option>
+                      <option>Internet</option>
+                      <option>Software</option>
+                      <option>Outros</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Descricao</span>
+                    <input id="expenseName" type="text" placeholder="Ex: conta de energia" />
+                  </label>
+                  <label class="field">
+                    <span>Valor</span>
+                    <input id="expenseAmount" type="number" min="0" step="1" required />
+                  </label>
+                  <label class="field">
+                    <span>Data</span>
+                    <input id="expenseDate" type="date" required />
+                  </label>
+                  <label class="field">
+                    <span>Status</span>
+                    <select id="expenseStatus">
+                      <option>Aberta</option>
+                      <option>Paga</option>
+                    </select>
+                  </label>
+                  <button class="button primary" type="submit">Adicionar despesa</button>
+                </form>
+                <div class="table-wrap finance-table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Data</th>
+                        <th>Categoria</th>
+                        <th>Descricao</th>
+                        <th>Valor</th>
+                        <th>Status</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody id="expenseRows"></tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section class="panel">
+                <div class="panel-title">
+                  <div>
+                    <span class="kicker">Investimento</span>
+                    <h2>Onde investir</h2>
+                  </div>
+                  <strong class="finance-invest-total" id="financeInvestTotal">R$ 0,00</strong>
+                </div>
+                <div class="investment-list" id="investmentList"></div>
+                <button class="button secondary" id="saveInvestments" type="button">Salvar divisao</button>
+              </section>
+            </div>
+          </section>
         </section>
 
         <section class="view" id="calendarView">

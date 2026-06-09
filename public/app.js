@@ -2,6 +2,7 @@ const api = {
   tasks: "/api/tasks",
   clients: "/api/clients",
   uploads: "/api/uploads",
+  finance: "/api/finance",
   report: "/api/reports/client",
   summary: "/api/summary",
   health: "/api/health",
@@ -16,9 +17,11 @@ const state = {
   tasks: [],
   clients: [],
   uploads: [],
+  finance: null,
   summary: null,
   report: null,
   focusDate: toDateInput(new Date()),
+  financeMonth: toDateInput(new Date()).slice(0, 7),
   filters: {
     search: "",
     client: "all",
@@ -69,6 +72,21 @@ const els = {
   calendarTitle: document.querySelector("#calendarTitle"),
   calendarGrid: document.querySelector("#calendarGrid"),
   clientGrid: document.querySelector("#clientGrid"),
+  financeMonth: document.querySelector("#financeMonth"),
+  financeRevenue: document.querySelector("#financeRevenue"),
+  financeOpen: document.querySelector("#financeOpen"),
+  financeExpenses: document.querySelector("#financeExpenses"),
+  financeBalance: document.querySelector("#financeBalance"),
+  expenseForm: document.querySelector("#expenseForm"),
+  expenseCategory: document.querySelector("#expenseCategory"),
+  expenseName: document.querySelector("#expenseName"),
+  expenseAmount: document.querySelector("#expenseAmount"),
+  expenseDate: document.querySelector("#expenseDate"),
+  expenseStatus: document.querySelector("#expenseStatus"),
+  expenseRows: document.querySelector("#expenseRows"),
+  investmentList: document.querySelector("#investmentList"),
+  financeInvestTotal: document.querySelector("#financeInvestTotal"),
+  saveInvestments: document.querySelector("#saveInvestments"),
   uploadClient: document.querySelector("#uploadClient"),
   assetFile: document.querySelector("#assetFile"),
   uploadAsset: document.querySelector("#uploadAsset"),
@@ -130,6 +148,8 @@ async function init() {
   els.focusDate.value = state.focusDate;
   els.calendarMonth.value = state.focusDate.slice(0, 7);
   els.reportMonth.value = state.focusDate.slice(0, 7);
+  els.financeMonth.value = state.financeMonth;
+  els.expenseDate.value = state.focusDate;
   bindEvents();
   await registerServiceWorker();
   await refreshAll();
@@ -175,6 +195,12 @@ function bindEvents() {
   els.closeClientDialog.addEventListener("click", () => els.clientDialog.close());
   els.cancelClientDialog.addEventListener("click", () => els.clientDialog.close());
   els.deleteClient.addEventListener("click", deleteCurrentClient);
+  els.financeMonth.addEventListener("change", () => {
+    state.financeMonth = els.financeMonth.value || state.focusDate.slice(0, 7);
+    renderFinance();
+  });
+  els.expenseForm.addEventListener("submit", saveExpense);
+  els.saveInvestments.addEventListener("click", saveInvestments);
   els.calendarMonth.addEventListener("change", renderCalendar);
   els.uploadAsset.addEventListener("click", uploadSelectedAsset);
   els.generateReport.addEventListener("click", generateReport);
@@ -198,7 +224,7 @@ function bindEvents() {
 
 async function refreshAll() {
   await checkHealth();
-  await Promise.all([loadTasks(), loadClients(), loadUploads(), loadSummary()]);
+  await Promise.all([loadTasks(), loadClients(), loadUploads(), loadSummary(), loadFinance()]);
   populateFilters();
   render();
   maybeOpenDailySummary();
@@ -236,6 +262,10 @@ async function loadUploads() {
   state.uploads = await request(api.uploads);
 }
 
+async function loadFinance() {
+  state.finance = await request(api.finance);
+}
+
 function render() {
   renderNextPost();
   renderMetrics();
@@ -246,6 +276,7 @@ function render() {
   renderReminders();
   renderKanban();
   renderClients();
+  renderFinance();
   renderCalendar();
   renderAssets();
   renderReport();
@@ -439,6 +470,62 @@ function renderClients() {
       await generateReport();
     });
   });
+}
+
+function renderFinance() {
+  const finance = state.finance || { expenses: [], investments: defaultInvestments() };
+  const expenses = Array.isArray(finance.expenses) ? finance.expenses : [];
+  const investments = Array.isArray(finance.investments) && finance.investments.length ? finance.investments : defaultInvestments();
+  const month = state.financeMonth || state.focusDate.slice(0, 7);
+  const monthExpenses = expenses
+    .filter((expense) => String(expense.date || "").startsWith(month))
+    .sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+
+  const revenue = state.clients.reduce((sum, client) => sum + Number(client.contractValue || 0), 0);
+  const open = state.clients
+    .filter((client) => client.paymentStatus !== "Pago")
+    .reduce((sum, client) => sum + Number(client.contractValue || 0), 0);
+  const expenseTotal = monthExpenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0);
+  const balance = revenue - expenseTotal;
+  const investBase = Math.max(balance, 0);
+
+  els.financeRevenue.textContent = money(revenue);
+  els.financeOpen.textContent = money(open);
+  els.financeExpenses.textContent = money(expenseTotal);
+  els.financeBalance.textContent = money(balance);
+  els.financeInvestTotal.textContent = money(investBase);
+
+  els.expenseRows.innerHTML = monthExpenses.length
+    ? monthExpenses.map((expense) => `
+      <tr>
+        <td>${formatShortDate(expense.date)}</td>
+        <td>${escapeHtml(expense.category)}</td>
+        <td>${escapeHtml(expense.name || "-")}</td>
+        <td>${money(expense.amount)}</td>
+        <td>${escapeHtml(expense.status || "Aberta")}</td>
+        <td><button class="mini-button danger-text" data-expense-delete="${expense.id}" type="button">Excluir</button></td>
+      </tr>
+    `).join("")
+    : `<tr><td colspan="6">Nenhuma despesa neste mes.</td></tr>`;
+
+  els.expenseRows.querySelectorAll("[data-expense-delete]").forEach((button) => {
+    button.addEventListener("click", () => deleteExpense(button.dataset.expenseDelete));
+  });
+
+  els.investmentList.innerHTML = investments.map((item) => {
+    const percent = Number(item.percent || 0);
+    const amount = investBase * (percent / 100);
+    return `
+      <label class="investment-row">
+        <span>
+          <strong>${escapeHtml(item.name)}</strong>
+          <small>${money(amount)}</small>
+        </span>
+        <input class="investment-percent" data-investment-id="${escapeHtml(item.id)}" data-investment-name="${escapeHtml(item.name)}" type="number" min="0" max="100" step="1" value="${percent}" />
+        <em>%</em>
+      </label>
+    `;
+  }).join("");
 }
 
 function renderCalendar() {
@@ -702,6 +789,48 @@ async function deleteCurrentClient() {
   await request(`${api.clients}/${id}`, { method: "DELETE" });
   els.clientDialog.close();
   await refreshAll();
+}
+
+async function saveExpense(event) {
+  event.preventDefault();
+  const payload = {
+    category: els.expenseCategory.value,
+    name: els.expenseName.value.trim(),
+    amount: Number(els.expenseAmount.value || 0),
+    date: els.expenseDate.value || state.focusDate,
+    status: els.expenseStatus.value,
+  };
+  await request(`${api.finance}/expenses`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+  els.expenseName.value = "";
+  els.expenseAmount.value = "";
+  els.expenseStatus.value = "Aberta";
+  state.financeMonth = payload.date.slice(0, 7);
+  els.financeMonth.value = state.financeMonth;
+  await loadFinance();
+  renderFinance();
+}
+
+async function deleteExpense(id) {
+  if (!id) return;
+  await request(`${api.finance}/expenses/${id}`, { method: "DELETE" });
+  await loadFinance();
+  renderFinance();
+}
+
+async function saveInvestments() {
+  const investments = [...els.investmentList.querySelectorAll(".investment-percent")].map((input) => ({
+    id: input.dataset.investmentId,
+    name: input.dataset.investmentName,
+    percent: Number(input.value || 0),
+  }));
+  state.finance = await request(`${api.finance}/investments`, {
+    method: "PUT",
+    body: JSON.stringify({ investments }),
+  });
+  renderFinance();
 }
 
 async function uploadSelectedAsset() {
@@ -986,6 +1115,15 @@ function formatNumber(value) {
 
 function money(value) {
   return Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function defaultInvestments() {
+  return [
+    { id: "reserva", name: "Reserva", percent: 40 },
+    { id: "equipamentos", name: "Equipamentos", percent: 25 },
+    { id: "marketing", name: "Marketing", percent: 20 },
+    { id: "ferramentas", name: "Ferramentas", percent: 15 },
+  ];
 }
 
 function formatKb(value) {
