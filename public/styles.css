@@ -607,19 +607,50 @@ textarea:focus {
   font-size: 1.55rem;
 }
 
-.finance-grid {
+.grid.two.finance-grid {
   align-items: start;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
 }
 
 .finance-form {
   display: grid;
-  grid-template-columns: 150px minmax(180px, 1fr) 120px 150px 130px auto;
-  gap: 10px;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 10px 12px;
   align-items: end;
+}
+
+.finance-form .field:nth-child(1) {
+  grid-column: span 3;
+}
+
+.finance-form .field:nth-child(2) {
+  grid-column: span 4;
+}
+
+.finance-form .field:nth-child(3) {
+  grid-column: span 2;
+}
+
+.finance-form .field:nth-child(4) {
+  grid-column: span 2;
+}
+
+.finance-form .field:nth-child(5) {
+  grid-column: span 3;
+}
+
+.finance-form .button {
+  grid-column: span 4;
+  min-height: 43px;
+  white-space: normal;
 }
 
 .finance-table-wrap {
   margin-top: 16px;
+}
+
+.finance-table-wrap table {
+  min-width: 620px;
 }
 
 .danger-text {
@@ -1292,6 +1323,15 @@ dialog::backdrop {
   .finance-form {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .grid.two.finance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .finance-form .field,
+  .finance-form .button {
+    grid-column: span 1;
+  }
 }
 
 @media (max-width: 740px) {
@@ -1322,6 +1362,11 @@ dialog::backdrop {
   .checklist-editor,
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .finance-form .field,
+  .finance-form .button {
+    grid-column: 1 / -1;
   }
 
   .next-post-hero {
